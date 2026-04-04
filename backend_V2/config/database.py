@@ -11,6 +11,7 @@ DB_CONFIG = {
     'password': os.getenv('DB_PASSWORD', ''),
     'database': os.getenv('DB_NAME', 'salestrack'),
     'charset':  os.getenv('DB_CHARSET', 'utf8mb4'),
+    'collation': 'utf8mb4_unicode_ci',
     'use_unicode': True
 }
 
@@ -21,8 +22,10 @@ def get_db_connection():
         cursor.execute("SET NAMES utf8mb4")
         cursor.execute("SET CHARACTER SET utf8mb4")
         cursor.execute("SET character_set_connection=utf8mb4")
+        cursor.execute("SET collation_connection=utf8mb4_unicode_ci")
         cursor.close()
         return conn
     except Error as e:
         print(f"Erro ao conectar ao banco: {e}")
-        return None
+        raise e
+

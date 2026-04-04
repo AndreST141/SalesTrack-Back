@@ -15,6 +15,34 @@ class VendaRepository:
             LIMIT 100
         """)
         vendas = cursor.fetchall()
+
+        # Buscar pagamentos de todas as vendas retornadas
+        if vendas:
+            venda_ids = [v['idVenda'] for v in vendas]
+            placeholders = ','.join(['%s'] * len(venda_ids))
+            cursor.execute(f"""
+                SELECT idVenda, formaPagamento, valor
+                FROM PagamentoVenda
+                WHERE idVenda IN ({placeholders})
+                ORDER BY idPagamento
+            """, tuple(venda_ids))
+            pagamentos = cursor.fetchall()
+
+            # Agrupar pagamentos por idVenda
+            pagamentos_por_venda = {}
+            for p in pagamentos:
+                vid = p['idVenda']
+                if vid not in pagamentos_por_venda:
+                    pagamentos_por_venda[vid] = []
+                pagamentos_por_venda[vid].append({
+                    'formaPagamento': p['formaPagamento'],
+                    'valor': p['valor']
+                })
+
+            # Adicionar pagamentos a cada venda
+            for v in vendas:
+                v['pagamentos'] = pagamentos_por_venda.get(v['idVenda'], [])
+
         cursor.close()
         conn.close()
         return vendas
@@ -37,6 +65,7 @@ class VendaRepository:
             conn.close()
             return None
 
+        # Buscar itens da venda
         cursor.execute("""
             SELECT iv.*, p.nome as produtoNome
             FROM ItemVenda iv
@@ -44,6 +73,16 @@ class VendaRepository:
             WHERE iv.idVenda = %s
         """, (id,))
         venda['itens'] = cursor.fetchall()
+
+        # Buscar pagamentos da venda
+        cursor.execute("""
+            SELECT formaPagamento, valor
+            FROM PagamentoVenda
+            WHERE idVenda = %s
+            ORDER BY idPagamento
+        """, (id,))
+        venda['pagamentos'] = cursor.fetchall()
+
         cursor.close()
         conn.close()
         return venda
@@ -67,6 +106,7 @@ class VendaRepository:
             ))
             venda_id = cursor.lastrowid
 
+            # Inserir itens da venda
             for item in dados['itens']:
                 cursor.execute("""
                     INSERT INTO ItemVenda (idVenda, idProduto, quantidade, precoUnitario, subtotal)
@@ -76,6 +116,21 @@ class VendaRepository:
                 cursor.execute("""
                     UPDATE Produto SET estoque = estoque - %s WHERE idProduto = %s
                 """, (item['quantidade'], item['idProduto']))
+
+            # Inserir pagamentos na tabela PagamentoVenda
+            pagamentos = dados.get('pagamentos', [])
+            if pagamentos:
+                for pag in pagamentos:
+                    cursor.execute("""
+                        INSERT INTO PagamentoVenda (idVenda, formaPagamento, valor)
+                        VALUES (%s, %s, %s)
+                    """, (venda_id, pag['forma'], pag['valor']))
+            else:
+                # Fallback: se não veio array de pagamentos, salva a forma única
+                cursor.execute("""
+                    INSERT INTO PagamentoVenda (idVenda, formaPagamento, valor)
+                    VALUES (%s, %s, %s)
+                """, (venda_id, dados['formaPagamento'], dados['valorFinal']))
 
             conn.commit()
             cursor.close()
