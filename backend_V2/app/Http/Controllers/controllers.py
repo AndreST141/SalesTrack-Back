@@ -29,7 +29,8 @@ class AuthController:
 class ProdutoController:
     @staticmethod
     def index():
-        result = ProdutoService.list()
+        incluir_inativos = request.args.get('incluir_inativos', 'false').lower() == 'true'
+        result = ProdutoService.list(incluir_inativos)
         return jsonify(result['produtos']), result['status']
 
     @staticmethod
@@ -45,6 +46,11 @@ class ProdutoController:
     @staticmethod
     def destroy(id):
         result = ProdutoService.delete(id)
+        return jsonify({'success': True}), result['status']
+
+    @staticmethod
+    def reactivate(id):
+        result = ProdutoService.reactivate(id)
         return jsonify({'success': True}), result['status']
 
 
