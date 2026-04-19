@@ -1,0 +1,17 @@
+# Variáveis de Ambiente (MUITO IMPORTANTE)
+.env
+
+# Ambientes Virtuais (Python)
+venv/
+env/
+.venv/
+
+# Arquivos de cache do Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Arquivos de editores/sistema
+.vscode/
+.idea/
+.DS_Store
