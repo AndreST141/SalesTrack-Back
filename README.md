@@ -110,4 +110,4 @@ Script_SalesTrack.bat
 
 ---
 
-🔗 **Backend:** O código da API e banco de dados está localizado no repositório [SalesTrack-Front](https://github.com/AndreST141/SalesTrack-Front.git)
+🔗 **Frontend:** O código da Frontend está localizado no repositório [SalesTrack-Front](https://github.com/AndreST141/SalesTrack-Front.git)
