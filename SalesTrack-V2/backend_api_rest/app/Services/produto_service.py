@@ -4,8 +4,8 @@ from app.Constants.geral import Geral
 class ProdutoService:
 
     @staticmethod
-    def list():
-        produtos = ProdutoRepository.get_all()
+    def list(incluir_inativos=False):
+        produtos = ProdutoRepository.get_all(incluir_inativos)
         for p in produtos:
             p['preco'] = float(p['preco'])
         return {'status': 200, 'produtos': produtos}
@@ -30,3 +30,8 @@ class ProdutoService:
     def delete(id):
         ProdutoRepository.soft_delete(id)
         return {'status': 200, 'message': Geral.PRODUTO_REMOVIDO}
+
+    @staticmethod
+    def reactivate(id):
+        ProdutoRepository.reactivate(id)
+        return {'status': 200, 'message': 'Produto reativado com sucesso.'}

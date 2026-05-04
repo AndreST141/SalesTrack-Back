@@ -19,6 +19,7 @@ produto_bp = Blueprint('produtos', __name__)
 produto_bp.route('/api/produtos',          methods=['GET']   )(token_required(ProdutoController.index))
 produto_bp.route('/api/produtos',          methods=['POST']  )(token_required(ProdutoController.store))
 produto_bp.route('/api/produtos/<int:id>', methods=['PUT']   )(token_required(ProdutoController.update))
+produto_bp.route('/api/produtos/<int:id>', methods=['PATCH'] )(token_required(ProdutoController.reactivate))
 produto_bp.route('/api/produtos/<int:id>', methods=['DELETE'])(token_required(ProdutoController.destroy))
 
 # =============================================
@@ -27,6 +28,8 @@ produto_bp.route('/api/produtos/<int:id>', methods=['DELETE'])(token_required(Pr
 cliente_bp = Blueprint('clientes', __name__)
 cliente_bp.route('/api/clientes',          methods=['GET']   )(token_required(ClienteController.index))
 cliente_bp.route('/api/clientes',          methods=['POST']  )(token_required(ClienteController.store))
+cliente_bp.route('/api/clientes/<int:id>', methods=['PUT']   )(token_required(ClienteController.update))
+cliente_bp.route('/api/clientes/<int:id>', methods=['PATCH'] )(token_required(ClienteController.reactivate))
 cliente_bp.route('/api/clientes/<int:id>', methods=['DELETE'])(token_required(ClienteController.destroy))
 
 # =============================================

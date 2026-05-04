@@ -29,7 +29,8 @@ class AuthController:
 class ProdutoController:
     @staticmethod
     def index():
-        result = ProdutoService.list()
+        incluir_inativos = request.args.get('incluir_inativos', 'false').lower() == 'true'
+        result = ProdutoService.list(incluir_inativos)
         return jsonify(result['produtos']), result['status']
 
     @staticmethod
@@ -47,6 +48,11 @@ class ProdutoController:
         result = ProdutoService.delete(id)
         return jsonify({'success': True}), result['status']
 
+    @staticmethod
+    def reactivate(id):
+        result = ProdutoService.reactivate(id)
+        return jsonify({'success': True}), result['status']
+
 
 # =============================================
 # ClienteController
@@ -54,13 +60,24 @@ class ProdutoController:
 class ClienteController:
     @staticmethod
     def index():
-        result = ClienteService.list()
+        incluir_inativos = request.args.get('incluir_inativos', 'false').lower() == 'true'
+        result = ClienteService.list(incluir_inativos)
         return jsonify(result['clientes']), result['status']
 
     @staticmethod
     def store():
         result = ClienteService.create(request.json or {})
         return jsonify({'success': True, 'id': result.get('id')}), result['status']
+
+    @staticmethod
+    def update(id):
+        result = ClienteService.update(id, request.json or {})
+        return jsonify({'success': True}), result['status']
+
+    @staticmethod
+    def reactivate(id):
+        result = ClienteService.reactivate(id)
+        return jsonify({'success': True}), result['status']
 
     @staticmethod
     def destroy(id):

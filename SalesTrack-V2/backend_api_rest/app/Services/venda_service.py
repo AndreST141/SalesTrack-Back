@@ -11,6 +11,18 @@ class VendaService:
             v['desconto']   = float(v['desconto'])
             v['valorFinal'] = float(v['valorFinal'])
             v['dataVenda']  = v['dataVenda'].strftime('%Y-%m-%d %H:%M:%S')
+
+            # Formatar pagamentos
+            if v.get('pagamentos'):
+                for p in v['pagamentos']:
+                    p['valor'] = float(p['valor'])
+            else:
+                # Fallback: usar formaPagamento da Venda
+                v['pagamentos'] = [{
+                    'formaPagamento': v['formaPagamento'],
+                    'valor': v['valorFinal']
+                }]
+
         return {'status': 200, 'vendas': vendas}
 
     @staticmethod
@@ -26,6 +38,17 @@ class VendaService:
         for item in venda['itens']:
             item['precoUnitario'] = float(item['precoUnitario'])
             item['subtotal']      = float(item['subtotal'])
+
+        # Formatar pagamentos
+        if venda.get('pagamentos'):
+            for p in venda['pagamentos']:
+                p['valor'] = float(p['valor'])
+        else:
+            # Fallback: usar formaPagamento da Venda
+            venda['pagamentos'] = [{
+                'formaPagamento': venda['formaPagamento'],
+                'valor': venda['valorFinal']
+            }]
 
         return {'status': 200, 'venda': venda}
 

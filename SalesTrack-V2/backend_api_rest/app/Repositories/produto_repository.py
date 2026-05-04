@@ -3,14 +3,15 @@ from config.database import get_db_connection
 class ProdutoRepository:
 
     @staticmethod
-    def get_all():
+    def get_all(incluir_inativos=False):
         conn = get_db_connection()
         cursor = conn.cursor(dictionary=True)
-        cursor.execute("""
+        where_clause = "" if incluir_inativos else "WHERE p.ativo = TRUE"
+        cursor.execute(f"""
             SELECT p.*, c.nome as categoriaNome
             FROM Produto p
             LEFT JOIN Categoria c ON p.idCategoria = c.idCategoria
-            WHERE p.ativo = TRUE
+            {where_clause}
             ORDER BY p.nome
         """)
         produtos = cursor.fetchall()
@@ -63,6 +64,15 @@ class ProdutoRepository:
         conn = get_db_connection()
         cursor = conn.cursor()
         cursor.execute("UPDATE Produto SET ativo = FALSE WHERE idProduto = %s", (id,))
+        conn.commit()
+        cursor.close()
+        conn.close()
+
+    @staticmethod
+    def reactivate(id):
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("UPDATE Produto SET ativo = TRUE WHERE idProduto = %s", (id,))
         conn.commit()
         cursor.close()
         conn.close()

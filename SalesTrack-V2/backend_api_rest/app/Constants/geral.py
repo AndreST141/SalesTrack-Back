@@ -19,6 +19,7 @@ class Geral:
 
     # Cliente
     CLIENTE_CADASTRADO      = "Cliente cadastrado com sucesso."
+    CLIENTE_ATUALIZADO      = "Cliente atualizado com sucesso."
     CLIENTE_REMOVIDO        = "Cliente removido com sucesso."
     CLIENTE_NAO_ENCONTRADO  = "Cliente não encontrado."
 
